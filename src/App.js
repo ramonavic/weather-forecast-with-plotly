@@ -2,6 +2,12 @@ import React, { Component } from 'react';
 import './style/App.css';
 import xhr from 'xhr';
 import Plot from './Plot.js';
+import { connect } from 'react-redux';
+import {
+  changeLocation,
+  setSelectedTemp,
+  setSelectedDate
+ } from './actions';
 
 class App extends Component {
 
@@ -9,19 +15,15 @@ class App extends Component {
       location: '',
       data: {},
       dates: [],
-      templs: [],
-      selected: {
-        date: '',
-        temp: null
-      }
+      temps: [],
     };
 
 
   fetchData = (event) => {
     event.preventDefault();
-    console.log("Fetching Data..", this.state.location)
+    console.log("Fetching Data..", this.props.location)
 
-    let location = encodeURIComponent(this.state.location)
+    let location = encodeURIComponent(this.props.location)
 
     const urlPrefix = 'http://api.openweathermap.org/data/2.5/forecast?q=';
     const urlSuffix = '&APPID=647fe2423812e744fd5e264bc9a67c12&units=metric';
@@ -44,31 +46,25 @@ class App extends Component {
         data: body,
         dates: dates,
         temps: temps,
-        selected: {
-          date: '',
-          temps: null
-        }
       });
     });
   };
 
   changeLocation = (event) => {
-    this.setState({
-      location: event.target.value
-    });
+    this.props.dispatch(changeLocation(event.target.value))
   };
+
+
+
 
   onPlotClick = (data) => {
     console.log(data)
     if (data.points) {
-      this.setState({
-        selected: {
-          date: data.points[0].x,
-          temp: data.points[0].y
-        }
-      })
+      let number = data.points[0].pointNumber
+      this.props.dispatch(setSelectedDate(data.points[0].x));
+      this.props.dispatch(setSelectedTemp(data.points[0].y));
     }
-  }
+  };
 
   render() {
     let currentTemp = 'not loaded yet';
@@ -86,7 +82,7 @@ class App extends Component {
             <input
               placeholder={"City, Country"}
               type="text"
-              value={this.state.location}
+              value={this.props.location}
               onChange={this.changeLocation}
              />
           </label>
@@ -96,11 +92,11 @@ class App extends Component {
         {/* Render the current temperature if no specific date is selected */}
           <p className="temp-wrapper">
             <span className="temp">
-              { this.state.selected.temp ? this.state.selected.temp : currentTemp }
+              { this.props.selected.temp ? this.props.selected.temp : currentTemp }
             </span>
             <span className="temp-symbol">°C</span>
             <span className="temp-date">
-              { this.state.selected.temp ? this.state.selected.date : ''}
+              { this.props.selected.temp ? this.props.selected.date : ''}
             </span>
           </p>
           <h2>Forecast</h2>
@@ -118,4 +114,11 @@ class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    location: state.location,
+    selected: state.selected
+  };
+}
+
+export default connect(mapStateToProps)(App);
