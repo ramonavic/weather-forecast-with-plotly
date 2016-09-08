@@ -10,6 +10,10 @@ class App extends Component {
       data: {},
       dates: [],
       templs: [],
+      selected: {
+        date: '',
+        temp: null
+      }
     };
 
 
@@ -39,8 +43,11 @@ class App extends Component {
       component.setState({
         data: body,
         dates: dates,
-        temps: temps
-
+        temps: temps,
+        selected: {
+          date: '',
+          temps: null
+        }
       });
     });
   };
@@ -51,6 +58,17 @@ class App extends Component {
     });
   };
 
+  onPlotClick = (data) => {
+    console.log(data)
+    if (data.points) {
+      this.setState({
+        selected: {
+          date: data.points[0].x,
+          temp: data.points[0].y
+        }
+      })
+    }
+  }
 
   render() {
     let currentTemp = 'not loaded yet';
@@ -75,15 +93,22 @@ class App extends Component {
         </form>
         {(this.state.data.list) ? (
         <div className="wrapper">
+        {/* Render the current temperature if no specific date is selected */}
           <p className="temp-wrapper">
-            <span className="temp">{ currentTemp }</span>
+            <span className="temp">
+              { this.state.selected.temp ? this.state.selected.temp : currentTemp }
+            </span>
             <span className="temp-symbol">°C</span>
+            <span className="temp-date">
+              { this.state.selected.temp ? this.state.selected.date : ''}
+            </span>
           </p>
           <h2>Forecast</h2>
           <Plot
             xData={this.state.dates}
             yData={this.state.temps}
             type="scatter"
+            onPlotClick={this.onPlotClick}
           />
       </div>
     ) : null}
