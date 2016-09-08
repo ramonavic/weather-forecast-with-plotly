@@ -3,7 +3,7 @@ var initialState = {
   location: '',
   data: {},
   dates: [],
-  templs: [],
+  temps: [],
   selected: {
     date: '',
     temp: null
@@ -16,6 +16,18 @@ export default function mainReducer(state = initialState, action) {
       return Object.assign({}, state, {
         location: action.location
       });
+    case 'SET_DATA':
+      return Object.assign({}, state, {
+        data: action.data
+      });
+    case 'SET_DATES':
+      return Object.assign({}, state, {
+        dates: action.dates
+      });
+    case 'SET_TEMPS':
+      return Object.assign({}, state, {
+        temps: action.temps
+      })
     case 'SET_SELECTED_TEMP':
       return Object.assign({}, state, {
         selected: {
@@ -30,6 +42,7 @@ export default function mainReducer(state = initialState, action) {
           date: action.date
         }
       });
+
     default:
       return state;
   }

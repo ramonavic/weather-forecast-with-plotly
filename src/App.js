@@ -5,6 +5,9 @@ import Plot from './Plot.js';
 import { connect } from 'react-redux';
 import {
   changeLocation,
+  setData,
+  setDates,
+  setTemps,
   setSelectedTemp,
   setSelectedDate
  } from './actions';
@@ -12,7 +15,6 @@ import {
 class App extends Component {
 
     state = {
-      location: '',
       data: {},
       dates: [],
       temps: [],
@@ -42,11 +44,9 @@ class App extends Component {
         dates.push(list[i].dt_txt);
         temps.push(list[i].main.temp)
       }
-      component.setState({
-        data: body,
-        dates: dates,
-        temps: temps,
-      });
+      component.props.dispatch(setData(body));
+      component.props.dispatch(setDates(dates));
+      component.props.dispatch(setTemps(temps));
     });
   };
 
@@ -68,8 +68,8 @@ class App extends Component {
 
   render() {
     let currentTemp = 'not loaded yet';
-    if (this.state.data.list) {
-      currentTemp = this.state.data.list[0].main.temp;
+    if (this.props.data.list) {
+      currentTemp = this.props.data.list[0].main.temp;
     }
 
 
@@ -87,26 +87,27 @@ class App extends Component {
              />
           </label>
         </form>
-        {(this.state.data.list) ? (
-        <div className="wrapper">
-        {/* Render the current temperature if no specific date is selected */}
-          <p className="temp-wrapper">
-            <span className="temp">
-              { this.props.selected.temp ? this.props.selected.temp : currentTemp }
-            </span>
-            <span className="temp-symbol">°C</span>
-            <span className="temp-date">
-              { this.props.selected.temp ? this.props.selected.date : ''}
-            </span>
-          </p>
-          <h2>Forecast</h2>
-          <Plot
-            xData={this.state.dates}
-            yData={this.state.temps}
-            type="scatter"
-            onPlotClick={this.onPlotClick}
-          />
-      </div>
+        {/* Render plot and current temp if data has generated */}
+        {(this.props.data.list) ? (
+          <div className="wrapper">
+          {/* Render the current temperature if no specific date is selected */}
+            <p className="temp-wrapper">
+              <span className="temp">
+                { this.props.selected.temp ? this.props.selected.temp : currentTemp }
+              </span>
+              <span className="temp-symbol">°C</span>
+              <span className="temp-date">
+                { this.props.selected.temp ? this.props.selected.date : ''}
+              </span>
+            </p>
+            <h2>Forecast</h2>
+            <Plot
+              xData={this.props.dates}
+              yData={this.props.temps}
+              type="scatter"
+              onPlotClick={this.onPlotClick}
+            />
+        </div>
     ) : null}
 
     </div>
@@ -117,7 +118,11 @@ class App extends Component {
 function mapStateToProps(state) {
   return {
     location: state.location,
+    data: state.data,
+    dates: state.dates,
+    temps: state.temps,
     selected: state.selected
+
   };
 }
 

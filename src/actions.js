@@ -5,6 +5,27 @@ export function changeLocation(location) {
     };
 }
 
+export function setData(data) {
+  return {
+    type: 'SET_DATA',
+    data: data
+  }
+}
+
+export function setDates(dates) {
+  return {
+    type: 'SET_DATES',
+    dates: dates
+  }
+}
+
+export function setTemps(temps) {
+  return {
+    type: 'SET_TEMPS',
+    temps: temps
+  }
+}
+
 export function setSelectedDate(date) {
   return {
     type: 'SET_SELECTED_DATE',
