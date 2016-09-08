@@ -14,11 +14,6 @@ import {
 
 class App extends Component {
 
-    state = {
-      data: {},
-      dates: [],
-      temps: [],
-    };
 
 
   fetchData = (event) => {
@@ -61,8 +56,8 @@ class App extends Component {
     console.log(data)
     if (data.points) {
       let number = data.points[0].pointNumber
-      this.props.dispatch(setSelectedDate(data.points[0].x));
-      this.props.dispatch(setSelectedTemp(data.points[0].y));
+      this.props.dispatch(setSelectedDate(this.props.dates[number]));
+      this.props.dispatch(setSelectedTemp(this.props.temps[number]));
     }
   };
 
@@ -90,24 +85,21 @@ class App extends Component {
         {/* Render plot and current temp if data has generated */}
         {(this.props.data.list) ? (
           <div className="wrapper">
-          {/* Render the current temperature if no specific date is selected */}
-            <p className="temp-wrapper">
-              <span className="temp">
-                { this.props.selected.temp ? this.props.selected.temp : currentTemp }
-              </span>
-              <span className="temp-symbol">°C</span>
-              <span className="temp-date">
-                { this.props.selected.temp ? this.props.selected.date : ''}
-              </span>
-            </p>
-            <h2>Forecast</h2>
-            <Plot
-              xData={this.props.dates}
-              yData={this.props.temps}
-              type="scatter"
-              onPlotClick={this.onPlotClick}
-            />
-        </div>
+            {/* Render the current temperature if no specific date is selected */}
+            {(this.props.selected.temp) ? (
+              <p> The temperature on { this.props.selected.date } will be { this.props.selected.temp } °C </p>
+            ) : (
+              <p> The current temperature in { this.props.location } is { currentTemp }°C.</p>
+            )}
+
+              <h2>Forecast</h2>
+              <Plot
+                xData={this.props.dates}
+                yData={this.props.temps}
+                type="scatter"
+                onPlotClick={this.onPlotClick}
+              />
+          </div>
     ) : null}
 
     </div>
